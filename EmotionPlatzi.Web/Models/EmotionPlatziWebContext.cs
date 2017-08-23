@@ -24,5 +24,11 @@ namespace EmotionPlatzi.Web.Models
         public DbSet<EmoFace> EmoFaces { get; set; }
 
         public DbSet<EmoEmotion> EmoEmotions { get; set; }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            Database.SetInitializer<EmotionPlatziWebContext>(null);
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }
