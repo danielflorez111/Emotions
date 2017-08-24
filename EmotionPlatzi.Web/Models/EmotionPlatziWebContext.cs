@@ -30,5 +30,7 @@ namespace EmotionPlatzi.Web.Models
             Database.SetInitializer<EmotionPlatziWebContext>(null);
             base.OnModelCreating(modelBuilder);
         }
+
+        public System.Data.Entity.DbSet<EmotionPlatzi.Web.Models.Home> Homes { get; set; }
     }
 }
