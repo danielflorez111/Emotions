@@ -10,7 +10,6 @@ namespace EmotionPlatzi.Web.Models
     {
         public int Id { get; set; }
         public int EmoPictureId { get; set; }
-
         #region
         public int X { get; set; }
         public int Y { get; set; }
@@ -19,7 +18,6 @@ namespace EmotionPlatzi.Web.Models
         #endregion
 
         public virtual EmoPicture Picture { get; set; }
-
         public virtual ObservableCollection<EmoEmotion> Emotions { get; set; }
     }
 }

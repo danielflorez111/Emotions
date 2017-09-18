@@ -15,8 +15,9 @@ namespace EmotionPlatzi.Web.Models
         // For more information refer to the documentation:
         // http://msdn.microsoft.com/en-us/data/jj591621.aspx
     
-        public EmotionPlatziWebContext() : base("name=EmotionPlatziWebContext")
+        public EmotionPlatziWebContext() : base("name=EmotionPlatziAzure")
         {
+            Database.SetInitializer<EmotionPlatziWebContext>(new DropCreateDatabaseIfModelChanges<EmotionPlatziWebContext>());
         }
 
         public DbSet<EmoPicture> EmoPictures { get; set; }
@@ -25,12 +26,12 @@ namespace EmotionPlatzi.Web.Models
 
         public DbSet<EmoEmotion> EmoEmotions { get; set; }
 
+        /*
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             Database.SetInitializer<EmotionPlatziWebContext>(null);
             base.OnModelCreating(modelBuilder);
-        }
-
-        public System.Data.Entity.DbSet<EmotionPlatzi.Web.Models.Home> Homes { get; set; }
+        }*/
+        
     }
 }

@@ -4,10 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Threading.Tasks;
-using Microsoft.ProjectOxford.Emotion;
-using Microsoft.ProjectOxford.Common.Contract;
 using EmotionPlatzi.Web.Models;
 using System.Collections.ObjectModel;
+using System.Reflection;
+using Microsoft.ProjectOxford.Emotion;
+using Microsoft.ProjectOxford.Emotion.Contract;
+using System.Text;
+using System.Reflection;
 
 namespace EmotionPlatzi.Web.Util
 {
@@ -20,30 +23,65 @@ namespace EmotionPlatzi.Web.Util
             emoClient = new EmotionServiceClient(key);
         }
 
-        public async void DetectAndExtractFaces(Stream imageStream)
+        public async Task<EmoPicture> DetectAndExtractFacesAsync(Stream imageStream)
         {
             Emotion[] emotions = await emoClient.RecognizeAsync(imageStream);
 
             var emoPicture = new EmoPicture();
 
             emoPicture.Faces = ExtractFaces(emotions, emoPicture);
+
+            return emoPicture;
         }
 
         private ObservableCollection<EmoFace> ExtractFaces(Emotion[] emotions, EmoPicture emoPicture)
         {
-            emoPicture.Faces = new ObservableCollection<EmoFace>();
+            var listaFaces = new ObservableCollection<EmoFace>();
 
             foreach (var emotion in emotions)
             {
-                emoPicture.Faces.Add(new EmoFace()
+                var emoface = new EmoFace()
                 {
                     X = emotion.FaceRectangle.Left,
                     Y = emotion.FaceRectangle.Top,
                     Width = emotion.FaceRectangle.Width,
                     Height = emotion.FaceRectangle.Height,
                     Picture = emoPicture
-                });
+                };
+
+                emoface.Emotions = ProcessEmotions(emotion.Scores, emoface);
+                listaFaces.Add(emoface);
             }
+
+            return listaFaces;
+        }
+
+        private ObservableCollection<EmoEmotion> ProcessEmotions(Scores scores, EmoFace emoface)
+        {
+            var emotionList = new ObservableCollection<EmoEmotion>();
+
+            var properties = scores.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var filterProperties = properties.Where( p => p.PropertyType == typeof(float));
+
+            var emotype = EmoEmotionEnum.Undetermined;
+
+            foreach (var prop in filterProperties)
+            {
+                if (!Enum.TryParse<EmoEmotionEnum>(prop.Name, out emotype))
+                {
+                    emotype = EmoEmotionEnum.Undetermined;
+                } 
+
+                var emoEmotion = new EmoEmotion();
+                emoEmotion.Score = (float) prop.GetValue(scores);
+                emoEmotion.EmotionType = emotype;
+                emoEmotion.Face = emoface;
+
+                emotionList.Add(emoEmotion);
+            }
+
+            return emotionList;
+
         }
     }
 }

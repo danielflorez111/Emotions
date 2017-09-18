@@ -11,9 +11,6 @@ namespace EmotionPlatzi.Web.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
-
-        [Required]
-        [MaxLength(10, ErrorMessage = "La ruta supera el tamaño establecido")]
         public string Path { get; set; }
 
         public virtual ObservableCollection<EmoFace> Faces { get; set; }
